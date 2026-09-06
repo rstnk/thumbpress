@@ -1,5 +1,7 @@
 # thumbpress
 
+![AI-Driven Development](https://img.shields.io/badge/AI%20Driven-Development-cccccc)
+
 `thumbpress` creates a YouTube-ready 1280x720 thumbnail from a background image, title, and optional subtitle.
 
 ## Build
