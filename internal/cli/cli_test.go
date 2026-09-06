@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"encoding/json"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -117,6 +118,93 @@ func TestRunRenderWritesThumbnail(t *testing.T) {
 	}
 }
 
+func TestRunBatchWritesThumbnails(t *testing.T) {
+	directory := t.TempDir()
+	writeJPEGFixture(t, filepath.Join(directory, "one.jpg"))
+	writeJPEGFixture(t, filepath.Join(directory, "two.jpg"))
+	if err := os.Mkdir(filepath.Join(directory, "output"), 0o700); err != nil {
+		t.Fatalf("creating output directory: %v", err)
+	}
+	manifestPath := filepath.Join(directory, "jobs.json")
+	writeJSONManifest(t, manifestPath, map[string]any{
+		"jobs": []map[string]any{
+			{"input": "one.jpg", "output": "output/one.jpg", "title": "First title"},
+			{"input": "two.jpg", "output": "output/two.png", "title": "Second title", "subtitle": "Details", "font": "anton", "quality": 85},
+		},
+	})
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	exitCode := Run([]string{"batch", "--manifest", manifestPath}, stdout, stderr)
+	if exitCode != 0 {
+		t.Fatalf("Run() exit code = %d, stderr = %s", exitCode, stderr.String())
+	}
+	for _, filename := range []string{"one.jpg", "two.png"} {
+		file, err := os.Open(filepath.Join(directory, "output", filename))
+		if err != nil {
+			t.Fatalf("opening %s: %v", filename, err)
+		}
+		decoded, _, err := image.Decode(file)
+		file.Close()
+		if err != nil {
+			t.Fatalf("decoding %s: %v", filename, err)
+		}
+		if got, want := decoded.Bounds(), image.Rect(0, 0, 1280, 720); got != want {
+			t.Errorf("%s bounds = %v, want %v", filename, got, want)
+		}
+	}
+	if got, want := strings.Count(stdout.String(), "rendered"), 2; got != want {
+		t.Errorf("rendered count = %d, want %d", got, want)
+	}
+}
+
+func TestRunBatchWritesCSVThumbnail(t *testing.T) {
+	directory := t.TempDir()
+	writeJPEGFixture(t, filepath.Join(directory, "background.jpg"))
+	if err := os.Mkdir(filepath.Join(directory, "output"), 0o700); err != nil {
+		t.Fatalf("creating output directory: %v", err)
+	}
+	manifestPath := filepath.Join(directory, "jobs.csv")
+	if err := os.WriteFile(manifestPath, []byte("input,output,title\nbackground.jpg,output/thumbnail.jpg,CSV title\n"), 0o600); err != nil {
+		t.Fatalf("writing manifest: %v", err)
+	}
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	exitCode := Run([]string{"batch", "--manifest", manifestPath}, stdout, stderr)
+	if exitCode != 0 {
+		t.Fatalf("Run() exit code = %d, stderr = %s", exitCode, stderr.String())
+	}
+	if _, err := os.Stat(filepath.Join(directory, "output", "thumbnail.jpg")); err != nil {
+		t.Fatalf("opening output: %v", err)
+	}
+}
+
+func TestRunBatchValidatesAllJobsBeforeRendering(t *testing.T) {
+	directory := t.TempDir()
+	writeJPEGFixture(t, filepath.Join(directory, "background.jpg"))
+	manifestPath := filepath.Join(directory, "jobs.json")
+	writeJSONManifest(t, manifestPath, map[string]any{
+		"jobs": []map[string]any{
+			{"input": "background.jpg", "output": "output/first.jpg", "title": "First title"},
+			{"input": "background.jpg", "output": "output/second.jpg", "title": ""},
+		},
+	})
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	exitCode := Run([]string{"batch", "--manifest", manifestPath}, stdout, stderr)
+	if exitCode != 1 {
+		t.Fatalf("Run() exit code = %d, want 1; stderr = %s", exitCode, stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "job 2") {
+		t.Errorf("stderr = %q, want job number", stderr.String())
+	}
+	if _, err := os.Stat(filepath.Join(directory, "output", "first.jpg")); !os.IsNotExist(err) {
+		t.Errorf("first output exists before validation finished, stat error = %v", err)
+	}
+}
+
 func TestValidateDistinctPaths(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "background.jpg")
 	if err := validateDistinctPaths(path, path); err == nil {
@@ -140,5 +228,16 @@ func writeJPEGFixture(t *testing.T, path string) {
 	}
 	if err := jpeg.Encode(file, fixture, nil); err != nil {
 		t.Fatalf("encoding fixture: %v", err)
+	}
+}
+
+func writeJSONManifest(t *testing.T, path string, value any) {
+	t.Helper()
+	data, err := json.Marshal(value)
+	if err != nil {
+		t.Fatalf("marshaling manifest: %v", err)
+	}
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatalf("writing manifest: %v", err)
 	}
 }
