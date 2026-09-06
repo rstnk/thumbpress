@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/rstnk/thumbpress/internal/fonts"
 )
@@ -31,6 +32,24 @@ func TestParseRenderOptions(t *testing.T) {
 	}
 	if options.Quality != 90 {
 		t.Errorf("Quality = %d, want 90", options.Quality)
+	}
+}
+
+func TestParseRenderOptionsGeneratesOutputPath(t *testing.T) {
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	now := time.Date(2026, time.September, 6, 9, 12, 34, 0, time.UTC)
+
+	options, err := parseRenderOptions([]string{
+		"--input", "temp/o887mnz4jpk91.jpg",
+		"--title", "A title",
+	}, stdout, stderr, now)
+	if err != nil {
+		t.Fatalf("parseRenderOptions() error = %v", err)
+	}
+
+	if got, want := options.Output, "temp/o887mnz4jpk91_20260906091234.jpg"; got != want {
+		t.Errorf("Output = %q, want %q", got, want)
 	}
 }
 

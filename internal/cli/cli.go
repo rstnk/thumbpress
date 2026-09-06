@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/rstnk/thumbpress/internal/fonts"
 	"github.com/rstnk/thumbpress/internal/imageio"
@@ -100,19 +101,23 @@ func runRender(args []string, stdout, stderr io.Writer) int {
 
 // ParseRenderOptions parses and validates render command flags.
 func ParseRenderOptions(args []string, stdout, stderr io.Writer) (RenderOptions, error) {
+	return parseRenderOptions(args, stdout, stderr, time.Now())
+}
+
+func parseRenderOptions(args []string, stdout, stderr io.Writer, now time.Time) (RenderOptions, error) {
 	options := RenderOptions{Font: fonts.Default, Quality: 90}
 
 	flags := flag.NewFlagSet("render", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	flags.StringVar(&options.Input, "input", "", "background image path (required)")
-	flags.StringVar(&options.Output, "output", "", "output .jpg, .jpeg, or .png path (required)")
+	flags.StringVar(&options.Output, "output", "", "output .jpg, .jpeg, or .png path")
 	flags.StringVar(&options.Title, "title", "", "title text (required)")
 	flags.StringVar(&options.Subtitle, "subtitle", "", "subtitle text")
 	fontName := flags.String("font", string(fonts.Default), "font: anton, archivo-black, bebas-neue, or inter")
 	flags.IntVar(&options.Quality, "quality", 90, "JPEG quality from 1 to 100")
 	flags.Usage = func() {
 		fmt.Fprint(stdout, `Usage:
-  thumbpress render --input IMAGE --output IMAGE --title TEXT [flags]
+  thumbpress render --input IMAGE --title TEXT [--output IMAGE] [flags]
 
 Flags:
 `)
@@ -128,11 +133,11 @@ Flags:
 	if strings.TrimSpace(options.Input) == "" {
 		return RenderOptions{}, errors.New("--input is required")
 	}
-	if strings.TrimSpace(options.Output) == "" {
-		return RenderOptions{}, errors.New("--output is required")
-	}
 	if strings.TrimSpace(options.Title) == "" {
 		return RenderOptions{}, errors.New("--title is required")
+	}
+	if strings.TrimSpace(options.Output) == "" {
+		options.Output = defaultOutputPath(options.Input, now)
 	}
 	if options.Quality < 1 || options.Quality > 100 {
 		return RenderOptions{}, errors.New("--quality must be between 1 and 100")
@@ -174,4 +179,15 @@ func validateDistinctPaths(input, output string) error {
 	}
 
 	return nil
+}
+
+func defaultOutputPath(input string, now time.Time) string {
+	directory := filepath.Dir(input)
+	base := filepath.Base(input)
+	extension := filepath.Ext(base)
+	name := strings.TrimSuffix(base, extension)
+	if name == "" {
+		name = base
+	}
+	return filepath.Join(directory, name+"_"+now.Format("20060102150405")+".jpg")
 }

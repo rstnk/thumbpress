@@ -20,12 +20,12 @@ thumbpress render \
 Required flags:
 
 - `--input`: path to a decodable JPEG, PNG, or WebP background image
-- `--output`: path to the generated `.jpg`, `.jpeg`, or `.png` thumbnail
 - `--title`: non-empty title text
 
 Optional flags:
 
 - `--subtitle`: subtitle text
+- `--output`: output `.jpg`, `.jpeg`, or `.png` path; defaults to `<input-base>_YYYYMMDDHHMMSS.jpg` beside the input
 - `--font`: `anton`, `archivo-black`, `bebas-neue`, or `inter`; defaults to `anton`
 - `--quality`: JPEG quality from 1 through 100; defaults to 90 and has no effect for PNG
 

@@ -28,7 +28,7 @@ The title is placed in the top-left. The optional subtitle is placed in the bott
 | Flag | Required | Default | Behavior |
 | --- | --- | --- | --- |
 | `--input PATH` | Yes | None | Background image to decode. Supports JPEG, PNG, and WebP. |
-| `--output PATH` | Yes | None | Output path ending in `.jpg`, `.jpeg`, or `.png`. It must differ from the input path. |
+| `--output PATH` | No | `<input-base>_YYYYMMDDHHMMSS.jpg` | Output path ending in `.jpg`, `.jpeg`, or `.png`. When omitted, writes a JPEG beside the input using a local timestamp. |
 | `--title TEXT` | Yes | None | Title text placed in the top-left, automatically wrapped and sized to fit three lines. |
 | `--subtitle TEXT` | No | Omitted | Adds a bottom-right subtitle, automatically wrapped and sized to fit two lines. |
 | `--font NAME` | No | `anton` | Title font: `anton`, `archivo-black`, `bebas-neue`, or `inter`. |
