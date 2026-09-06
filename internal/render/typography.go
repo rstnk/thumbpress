@@ -19,6 +19,9 @@ const (
 	subtitleMaxSize = 48
 	subtitleMinSize = 24
 
+	titleLineHeightMultiplier    = 0.75
+	subtitleLineHeightMultiplier = 1.08
+
 	textStrokeRadius = 3
 	textShadowOffset = 4
 )
@@ -44,13 +47,14 @@ const (
 )
 
 type textOptions struct {
-	area      image.Rectangle
-	alignment textAlignment
-	font      *opentype.Font
-	maxLines  int
-	maxSize   int
-	minSize   int
-	name      string
+	area                 image.Rectangle
+	alignment            textAlignment
+	font                 *opentype.Font
+	maxLines             int
+	maxSize              int
+	minSize              int
+	lineHeightMultiplier float64
+	name                 string
 }
 
 type textLine struct {
@@ -82,13 +86,14 @@ func RenderThumbnail(source image.Image, config TextConfig) (*image.RGBA, error)
 
 	canvas := PrepareBackground(source)
 	title, err := layoutText(config.Title, textOptions{
-		area:      titleArea,
-		alignment: alignLeft,
-		font:      config.TitleFont,
-		maxLines:  3,
-		maxSize:   titleMaxSize,
-		minSize:   titleMinSize,
-		name:      "title",
+		area:                 titleArea,
+		alignment:            alignLeft,
+		font:                 config.TitleFont,
+		maxLines:             3,
+		maxSize:              titleMaxSize,
+		minSize:              titleMinSize,
+		lineHeightMultiplier: titleLineHeightMultiplier,
+		name:                 "title",
 	})
 	if err != nil {
 		return nil, err
@@ -101,13 +106,14 @@ func RenderThumbnail(source image.Image, config TextConfig) (*image.RGBA, error)
 	}
 
 	subtitle, err := layoutText(config.Subtitle, textOptions{
-		area:      subtitleArea,
-		alignment: alignRight,
-		font:      config.SubtitleFont,
-		maxLines:  2,
-		maxSize:   subtitleMaxSize,
-		minSize:   subtitleMinSize,
-		name:      "subtitle",
+		area:                 subtitleArea,
+		alignment:            alignRight,
+		font:                 config.SubtitleFont,
+		maxLines:             2,
+		maxSize:              subtitleMaxSize,
+		minSize:              subtitleMinSize,
+		lineHeightMultiplier: subtitleLineHeightMultiplier,
+		name:                 "subtitle",
 	})
 	if err != nil {
 		return nil, err
@@ -133,7 +139,11 @@ func layoutText(value string, options textOptions) (textLayout, error) {
 		metrics := face.Metrics()
 		ascent := metrics.Ascent.Ceil()
 		descent := metrics.Descent.Ceil()
-		lineHeight := int(math.Ceil(float64(ascent+descent) * 0.75))
+		lineHeightMultiplier := options.lineHeightMultiplier
+		if lineHeightMultiplier <= 0 {
+			lineHeightMultiplier = subtitleLineHeightMultiplier
+		}
+		lineHeight := int(math.Ceil(float64(ascent+descent) * lineHeightMultiplier))
 		height := ascent + descent + (len(lines)-1)*lineHeight
 
 		if len(lines) <= options.maxLines && height <= options.area.Dy() && linesFit(lines, face, options.area.Dx()) {
