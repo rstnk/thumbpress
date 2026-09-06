@@ -178,6 +178,18 @@ func TestRunBatchWritesCSVThumbnail(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(directory, "output", "thumbnail.jpg")); err != nil {
 		t.Fatalf("opening output: %v", err)
 	}
+	file, err := os.Open(filepath.Join(directory, "output", "thumbnail.jpg"))
+	if err != nil {
+		t.Fatalf("opening output for decoding: %v", err)
+	}
+	defer file.Close()
+	decoded, _, err := image.Decode(file)
+	if err != nil {
+		t.Fatalf("decoding output: %v", err)
+	}
+	if got, want := decoded.Bounds(), image.Rect(0, 0, 1280, 720); got != want {
+		t.Errorf("output bounds = %v, want %v", got, want)
+	}
 }
 
 func TestRunBatchValidatesAllJobsBeforeRendering(t *testing.T) {
@@ -202,6 +214,34 @@ func TestRunBatchValidatesAllJobsBeforeRendering(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(directory, "output", "first.jpg")); !os.IsNotExist(err) {
 		t.Errorf("first output exists before validation finished, stat error = %v", err)
+	}
+}
+
+func TestRunBatchContinuesAfterRenderingFailure(t *testing.T) {
+	directory := t.TempDir()
+	writeJPEGFixture(t, filepath.Join(directory, "background.jpg"))
+	if err := os.Mkdir(filepath.Join(directory, "output"), 0o700); err != nil {
+		t.Fatalf("creating output directory: %v", err)
+	}
+	manifestPath := filepath.Join(directory, "jobs.json")
+	writeJSONManifest(t, manifestPath, map[string]any{
+		"jobs": []map[string]any{
+			{"input": "missing.jpg", "output": "output/missing.jpg", "title": "Missing background"},
+			{"input": "background.jpg", "output": "output/finished.jpg", "title": "Finished thumbnail"},
+		},
+	})
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	exitCode := Run([]string{"batch", "--manifest", manifestPath}, stdout, stderr)
+	if exitCode != 1 {
+		t.Fatalf("Run() exit code = %d, want 1; stderr = %s", exitCode, stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "job 1") {
+		t.Errorf("stderr = %q, want failed job number", stderr.String())
+	}
+	if _, err := os.Stat(filepath.Join(directory, "output", "finished.jpg")); err != nil {
+		t.Fatalf("later output was not written: %v", err)
 	}
 }
 

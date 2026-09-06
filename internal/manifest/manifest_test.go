@@ -65,7 +65,7 @@ func TestLoadCSV(t *testing.T) {
 func TestLoadCSVParsesQuotedValues(t *testing.T) {
 	path := writeManifest(t, "jobs.csv", strings.Join([]string{
 		"input,output,title,subtitle",
-		"background.jpg,out.jpg,\"A title, with detail\",\"Line one",
+		"background.jpg,out.jpg,\"A \"\"quoted\"\" title, with detail\",\"Line one",
 		"line two\"",
 	}, "\n"))
 
@@ -73,7 +73,7 @@ func TestLoadCSVParsesQuotedValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Load() error = %v", err)
 	}
-	if got, want := jobs[0].Title, "A title, with detail"; got != want {
+	if got, want := jobs[0].Title, "A \"quoted\" title, with detail"; got != want {
 		t.Errorf("Title = %q, want %q", got, want)
 	}
 	if got, want := jobs[0].Subtitle, "Line one\nline two"; got != want {
