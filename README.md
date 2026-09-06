@@ -8,6 +8,18 @@
 make build
 ```
 
+## Install
+
+```text
+make install
+```
+
+This installs `thumbpress` to `~/.local/bin`. Set `INSTALL_DIR` to choose another location:
+
+```text
+make install INSTALL_DIR=/usr/local/bin
+```
+
 ## Render a thumbnail
 
 ```text

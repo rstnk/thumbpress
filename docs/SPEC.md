@@ -99,6 +99,7 @@ Use `gofmt`, contextual error wrapping, table-driven unit tests, and interfaces 
 
 ```text
 make build
+make install
 make test
 make lint
 make fix

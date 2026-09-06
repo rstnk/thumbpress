@@ -1,5 +1,6 @@
 PROJECT := thumbpress
 BINARY := bin/$(PROJECT)
+INSTALL_DIR ?= $(HOME)/.local/bin
 
 .PHONY: help
 help: ## Show available targets
@@ -33,6 +34,10 @@ fix: ## Apply Go modernization fixes
 .PHONY: tidy
 tidy: ## Synchronize module dependencies
 	go mod tidy
+
+.PHONY: install
+install: ## Install thumbpress to INSTALL_DIR (default ~/.local/bin)
+	@mkdir -p $(INSTALL_DIR) && go build -o $(INSTALL_DIR)/$(PROJECT) ./cmd/$(PROJECT)
 
 .PHONY: clean
 clean: ## Remove generated binaries
