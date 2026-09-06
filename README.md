@@ -5,13 +5,13 @@
 ## Build
 
 ```text
-go build -o ./thumbpress ./cmd/thumbpress
+make build
 ```
 
 ## Render a thumbnail
 
 ```text
-./thumbpress render \
+bin/thumbpress render \
   --input background.jpg \
   --output thumbnail.jpg \
   --title "Build better thumbnails" \
@@ -25,14 +25,14 @@ The title is placed in the top-left. The optional subtitle is placed in the bott
 
 ## Options
 
-```text
---input PATH       Background image path. Required.
---output PATH      Output .jpg, .jpeg, or .png path. Required.
---title TEXT       Title text. Required.
---subtitle TEXT    Optional subtitle text.
---font NAME        anton, archivo-black, bebas-neue, or inter. Default: anton.
---quality NUMBER   JPEG quality from 1 through 100. Default: 90.
-```
+| Flag | Required | Default | Behavior |
+| --- | --- | --- | --- |
+| `--input PATH` | Yes | None | Background image to decode. Supports JPEG, PNG, and WebP. |
+| `--output PATH` | Yes | None | Output path ending in `.jpg`, `.jpeg`, or `.png`. It must differ from the input path. |
+| `--title TEXT` | Yes | None | Title text placed in the top-left, automatically wrapped and sized to fit three lines. |
+| `--subtitle TEXT` | No | Omitted | Adds a bottom-right subtitle, automatically wrapped and sized to fit two lines. |
+| `--font NAME` | No | `anton` | Title font: `anton`, `archivo-black`, `bebas-neue`, or `inter`. |
+| `--quality NUMBER` | No | `90` | JPEG quality from 1 through 100. PNG output ignores this flag. |
 
 Titles automatically wrap and shrink to fit three lines. Subtitles automatically wrap and shrink to fit two lines. `thumbpress` returns a clear error when text still cannot fit. The subtitle uses embedded Inter for readability.
 
@@ -45,6 +45,6 @@ The binary embeds Anton, Archivo Black, Bebas Neue, and Inter, so it does not de
 ## Verify
 
 ```text
-go test ./...
-go vet ./...
+make test
+make lint
 ```

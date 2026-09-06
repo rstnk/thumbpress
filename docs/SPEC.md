@@ -98,10 +98,10 @@ Use `gofmt`, contextual error wrapping, table-driven unit tests, and interfaces 
 ## Commands
 
 ```text
-go build -o ./thumbpress ./cmd/thumbpress
-go test ./...
-go vet ./...
-go fix ./...
+make build
+make test
+make lint
+make fix
 ```
 
 ## Testing strategy
