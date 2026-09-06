@@ -20,8 +20,8 @@ func TestRenderThumbnailDrawsTitleAndSubtitle(t *testing.T) {
 	}
 
 	source := image.NewRGBA(image.Rect(0, 0, CanvasWidth, CanvasHeight))
-	for y := 0; y < CanvasHeight; y++ {
-		for x := 0; x < CanvasWidth; x++ {
+	for y := range CanvasHeight {
+		for x := range CanvasWidth {
 			source.SetRGBA(x, y, color.RGBA{R: 80, G: 80, B: 80, A: 255})
 		}
 	}
@@ -67,6 +67,31 @@ func TestLayoutTextRightAlignsLines(t *testing.T) {
 		if line.x+line.width != subtitleArea.Max.X {
 			t.Errorf("line right edge = %d, want %d", line.x+line.width, subtitleArea.Max.X)
 		}
+	}
+}
+
+func TestLayoutTextWrapsLongTitle(t *testing.T) {
+	parsed, err := fonts.Open(fonts.Anton)
+	if err != nil {
+		t.Fatalf("opening font: %v", err)
+	}
+
+	layout, err := layoutText("Build better thumbnails", textOptions{
+		area:      titleArea,
+		alignment: alignLeft,
+		font:      parsed,
+		maxLines:  3,
+		maxSize:   titleMaxSize,
+		minSize:   titleMinSize,
+		name:      "title",
+	})
+	if err != nil {
+		t.Fatalf("layoutText() error = %v", err)
+	}
+	defer layout.face.Close()
+
+	if len(layout.lines) < 2 {
+		t.Errorf("line count = %d, want a wrapped title", len(layout.lines))
 	}
 }
 

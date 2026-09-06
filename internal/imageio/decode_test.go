@@ -70,3 +70,24 @@ func TestDecodeFileReturnsContextForInvalidImage(t *testing.T) {
 		t.Fatal("DecodeFile() error = nil, want an error")
 	}
 }
+
+func TestValidateDimensions(t *testing.T) {
+	tests := []struct {
+		name    string
+		config  image.Config
+		wantErr bool
+	}{
+		{name: "valid", config: image.Config{Width: 8000, Height: 6000}},
+		{name: "zero width", config: image.Config{Height: 1}, wantErr: true},
+		{name: "over limit", config: image.Config{Width: 10_000, Height: 10_000}, wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateDimensions(tt.config)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("validateDimensions(%+v) error = %v, wantErr %v", tt.config, err, tt.wantErr)
+			}
+		})
+	}
+}

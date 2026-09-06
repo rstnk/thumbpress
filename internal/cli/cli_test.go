@@ -114,8 +114,8 @@ func writeJPEGFixture(t *testing.T, path string) {
 	defer file.Close()
 
 	fixture := image.NewRGBA(image.Rect(0, 0, 1920, 1080))
-	for y := 0; y < 1080; y++ {
-		for x := 0; x < 1920; x++ {
+	for y := range 1080 {
+		for x := range 1920 {
 			fixture.SetRGBA(x, y, color.RGBA{R: 90, G: 140, B: 180, A: 255})
 		}
 	}

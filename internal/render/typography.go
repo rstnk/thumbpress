@@ -147,7 +147,7 @@ func layoutText(value string, options textOptions) (textLayout, error) {
 
 func wrapText(value string, face font.Face, maxWidth int) []string {
 	var lines []string
-	for _, paragraph := range strings.Split(value, "\n") {
+	for paragraph := range strings.SplitSeq(value, "\n") {
 		words := strings.Fields(paragraph)
 		if len(words) == 0 {
 			continue

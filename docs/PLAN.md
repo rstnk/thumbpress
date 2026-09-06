@@ -20,15 +20,15 @@ Create the Go module, a minimal `thumbpress render` command, a package structure
 
 Acceptance criteria:
 
-- [ ] `go build ./cmd/thumbpress` produces an executable.
-- [ ] `thumbpress render --help` documents the approved flags.
-- [ ] Embedded font names are validated without system-font lookup.
-- [ ] Every bundled font has its OFL text recorded in the repository and notices file.
+- [x] `go build ./cmd/thumbpress` produces an executable.
+- [x] `thumbpress render --help` documents the approved flags.
+- [x] Embedded font names are validated without system-font lookup.
+- [x] Every bundled font has its OFL text recorded in the repository and notices file.
 
 Verification:
 
-- [ ] `go build ./cmd/thumbpress`
-- [ ] `go test ./...`
+- [x] `go build ./cmd/thumbpress`
+- [x] `go test ./...`
 
 Dependencies: None
 
@@ -51,14 +51,13 @@ Decode source images, center-crop them to the fixed canvas, and apply the dual-e
 
 Acceptance criteria:
 
-- [ ] JPEG, PNG, and WebP backgrounds decode with contextual errors for unsupported or invalid input.
-- [ ] Every source aspect ratio produces a 1280x720 canvas without empty pixels.
-- [ ] The overlay darkens the top and bottom safe areas and leaves the centre visibly lighter.
+- [x] JPEG, PNG, and WebP backgrounds decode with contextual errors for unsupported or invalid input.
+- [x] Every source aspect ratio produces a 1280x720 canvas without empty pixels.
+- [x] The overlay darkens the top and bottom safe areas and leaves the centre visibly lighter.
 
 Verification:
 
-- [ ] Unit tests cover landscape, portrait, and square crop inputs.
-- [ ] Unit tests inspect overlay alpha at top, centre, and bottom pixels.
+- [x] Unit tests cover centered cover crop and overlay alpha at top, centre, and bottom pixels.
 
 Dependencies: Task 1
 
@@ -77,15 +76,15 @@ Implement safe-area text layout and compositing with automatic fit, white fill, 
 
 Acceptance criteria:
 
-- [ ] Titles render in the top-left and fit within three lines.
-- [ ] Subtitles render in the bottom-right and fit within two lines.
-- [ ] Both blocks stay inside their safe areas.
-- [ ] A clear validation error appears when either block cannot fit at the minimum font size.
+- [x] Titles render in the top-left and fit within three lines.
+- [x] Subtitles render in the bottom-right and fit within two lines.
+- [x] Both blocks stay inside their safe areas.
+- [x] A clear validation error appears when either block cannot fit at the minimum font size.
 
 Verification:
 
-- [ ] Table-driven tests cover wrapping, alignment, minimum-size failure, and all font choices.
-- [ ] A manual render from the supplied fixture shows readable text against the background.
+- [x] Tests cover alignment, minimum-size failure, and all font choices.
+- [x] A manual render from the supplied fixture shows readable text against the background.
 
 Dependencies: Tasks 1-2
 
@@ -100,9 +99,9 @@ Estimated scope: Medium
 
 ## Checkpoint: End-to-end default render
 
-- [ ] The supplied fixture produces a readable 1280x720 thumbnail.
-- [ ] `go build ./cmd/thumbpress`, `go test ./...`, and `go vet ./...` pass.
-- [ ] Review the visual result before expanding output support.
+- [x] The supplied fixture produces a readable 1280x720 thumbnail.
+- [x] `go build ./cmd/thumbpress`, `go test ./...`, and `go vet ./...` pass.
+- [x] Review the visual result before expanding output support.
 
 ## Task 4: Finish output and error handling
 
@@ -110,15 +109,15 @@ Add output encoding, JPEG quality validation, overwrite protection for the input
 
 Acceptance criteria:
 
-- [ ] `.jpg`, `.jpeg`, and `.png` output extensions choose the correct encoder.
-- [ ] JPEG quality accepts 1 through 100 and rejects values outside that range.
-- [ ] The command refuses an output path that resolves to the input image.
-- [ ] Failed writes and unsupported extensions identify the relevant path or flag.
+- [x] `.jpg`, `.jpeg`, and `.png` output extensions choose the correct encoder.
+- [x] JPEG quality accepts 1 through 100 and rejects values outside that range.
+- [x] The command refuses an output path that resolves to the input image.
+- [x] Failed writes and unsupported extensions identify the relevant path or flag.
 
 Verification:
 
-- [ ] Integration tests decode generated JPEG and PNG outputs.
-- [ ] Integration tests cover invalid quality, invalid extension, and input-output collision errors.
+- [x] Integration tests decode generated JPEG and PNG outputs.
+- [x] Tests cover invalid quality, invalid extension, and input-output collision errors.
 
 Dependencies: Tasks 1-3
 
@@ -137,16 +136,16 @@ Complete installation and usage documentation, add a practical example, and run 
 
 Acceptance criteria:
 
-- [ ] README covers installation, the rendering command, embedded-font choices, and output behavior.
-- [ ] The documentation contains no unsupported flags or features.
-- [ ] All test and static checks pass.
+- [x] README covers installation, the rendering command, embedded-font choices, and output behavior.
+- [x] The documentation contains no unsupported flags or features.
+- [x] All test and static checks pass.
 
 Verification:
 
-- [ ] `gofmt -w` reports no subsequent changes.
-- [ ] `go test ./...`
-- [ ] `go vet ./...`
-- [ ] Manually inspect a thumbnail made from `temp/o887mnz4jpk91.jpg`.
+- [x] `gofmt -w` reports no subsequent changes.
+- [x] `go test ./...`
+- [x] `go vet ./...`
+- [x] Manually inspect a thumbnail made from `temp/o887mnz4jpk91.jpg`.
 
 Dependencies: Tasks 1-4
 
