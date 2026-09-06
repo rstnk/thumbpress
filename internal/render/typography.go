@@ -133,7 +133,7 @@ func layoutText(value string, options textOptions) (textLayout, error) {
 		metrics := face.Metrics()
 		ascent := metrics.Ascent.Ceil()
 		descent := metrics.Descent.Ceil()
-		lineHeight := int(math.Ceil(float64(ascent+descent) * 1.08))
+		lineHeight := int(math.Ceil(float64(ascent+descent) * 0.75))
 		height := ascent + descent + (len(lines)-1)*lineHeight
 
 		if len(lines) <= options.maxLines && height <= options.area.Dy() && linesFit(lines, face, options.area.Dx()) {
