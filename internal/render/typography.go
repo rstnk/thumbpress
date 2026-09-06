@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	titleArea    = image.Rect(72, 64, 840, 376)
+	titleArea    = image.Rect(36, 32, 804, 344)
 	subtitleArea = image.Rect(488, 504, 1208, 656)
 )
 
