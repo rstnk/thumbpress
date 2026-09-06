@@ -29,7 +29,24 @@ Optional flags:
 - `--font`: `anton`, `archivo-black`, `bebas-neue`, or `inter`; defaults to `bebas-neue`
 - `--quality`: JPEG quality from 1 through 100; defaults to 90 and has no effect for PNG
 
-`render` is the sole subcommand in version 1. The first release does not expose layout, color, stroke, shadow, or overlay controls.
+`render` and `batch` are the supported subcommands. The first release does not expose layout, color, stroke, shadow, or overlay controls.
+
+## Batch command contract
+
+```text
+thumbpress batch --manifest thumbnails.json
+```
+
+`--manifest` is required and accepts a `.json` or `.csv` file. A JSON manifest is an object with a `jobs` array. CSV manifests use a header row. Each job has these fields:
+
+- `input`: required background image path
+- `output`: required output image path
+- `title`: required thumbnail title
+- `subtitle`: optional thumbnail subtitle
+- `font`: optional title font, defaulting to `bebas-neue`
+- `quality`: optional JPEG quality, defaulting to `90`
+
+Relative input and output paths resolve relative to the manifest. Batch validation checks every job, including duplicate output paths, before any render begins. Each render then follows the single-image rendering behavior. A failed job does not prevent remaining valid jobs from running; the command reports every failed job and exits unsuccessfully when one or more jobs fail.
 
 ## Rendering behavior
 
@@ -146,5 +163,4 @@ Never:
 - User-defined themes and JSON configuration files
 - Layout, color, and typography controls
 - Multiple thumbnail templates
-- Batch rendering and automation
 - SVG, GIF, and animated-image handling

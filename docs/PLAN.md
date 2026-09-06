@@ -157,6 +157,35 @@ Likely files:
 
 Estimated scope: Small
 
+## Task 6: Render manifest batches
+
+Add a `batch` subcommand that reads JSON and CSV manifests and renders each listed thumbnail through the existing pipeline.
+
+Acceptance criteria:
+
+- [x] JSON and CSV manifests accept `input`, `output`, `title`, `subtitle`, `font`, and `quality` fields.
+- [x] Relative paths resolve from the manifest directory, and duplicate output paths are rejected before rendering.
+- [x] All jobs validate before the first output is written; later render failures are reported without skipping remaining jobs.
+- [x] Documentation defines the manifest schema and batch failure behavior.
+
+Verification:
+
+- [x] Unit tests cover JSON and CSV parsing, including quoted CSV fields.
+- [x] Integration tests render JSON and CSV manifest jobs to decodable 1280x720 files.
+- [x] `go test ./...` and `go vet ./...`
+
+Dependencies: Task 5
+
+Likely files:
+
+- `internal/manifest/`
+- `internal/cli/`
+- `README.md`
+- `docs/SPEC.md`
+- `docs/PLAN.md`
+
+Estimated scope: Medium
+
 ## Risks and mitigations
 
 | Risk | Impact | Mitigation |

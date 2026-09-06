@@ -35,6 +35,40 @@ The command accepts JPEG, PNG, and WebP background images up to 50 megapixels. O
 
 The title is placed in the top-left. The optional subtitle is placed in the bottom-right. Both use white text with a dark outline and shadow. A dark edge gradient protects the text while leaving the centre of the background visible.
 
+## Render a batch
+
+Create a JSON or CSV manifest, then render every job in one command:
+
+```text
+bin/thumbpress batch --manifest thumbnails.json
+```
+
+JSON manifests contain a `jobs` array:
+
+```json
+{
+  "jobs": [
+    {
+      "input": "backgrounds/episode-1.jpg",
+      "output": "thumbnails/episode-1.jpg",
+      "title": "Build better thumbnails",
+      "subtitle": "A Go CLI walkthrough",
+      "font": "anton",
+      "quality": 90
+    }
+  ]
+}
+```
+
+CSV manifests use this header:
+
+```text
+input,output,title,subtitle,font,quality
+backgrounds/episode-1.jpg,thumbnails/episode-1.jpg,Build better thumbnails,A Go CLI walkthrough,anton,90
+```
+
+Every job requires `input`, `output`, and `title`. `subtitle` is optional. Omitted `font` and `quality` values use `bebas-neue` and `90`. Relative image paths resolve from the manifest's directory, and output directories must already exist. `thumbpress` validates every job before it renders any image. It continues after image-specific failures, reports each failure, and exits unsuccessfully when any job fails.
+
 ## Options
 
 | Flag | Required | Default | Behavior |
@@ -45,6 +79,8 @@ The title is placed in the top-left. The optional subtitle is placed in the bott
 | `--subtitle TEXT` | No | Omitted | Adds a bottom-right subtitle, automatically wrapped and sized to fit two lines. |
 | `--font NAME` | No | `bebas-neue` | Title font: `anton`, `archivo-black`, `bebas-neue`, or `inter`. |
 | `--quality NUMBER` | No | `90` | JPEG quality from 1 through 100. PNG output ignores this flag. |
+
+`thumbpress batch` accepts one required option: `--manifest PATH`, ending in `.json` or `.csv`.
 
 Titles automatically wrap and shrink to fit three lines. Subtitles automatically wrap and shrink to fit two lines. `thumbpress` returns a clear error when text still cannot fit. The subtitle uses embedded Inter for readability.
 
