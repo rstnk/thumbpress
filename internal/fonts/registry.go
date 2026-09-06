@@ -18,7 +18,7 @@ const (
 	Inter        Name = "inter"
 )
 
-const Default = Anton
+const Default = BebasNeue
 
 var fontFiles = map[Name]string{
 	Anton:        "anton/Anton-Regular.ttf",

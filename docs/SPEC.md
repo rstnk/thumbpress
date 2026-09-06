@@ -26,7 +26,7 @@ Optional flags:
 
 - `--subtitle`: subtitle text
 - `--output`: output `.jpg`, `.jpeg`, or `.png` path; defaults to `<input-base>_YYYYMMDDHHMMSS.jpg` beside the input
-- `--font`: `anton`, `archivo-black`, `bebas-neue`, or `inter`; defaults to `anton`
+- `--font`: `anton`, `archivo-black`, `bebas-neue`, or `inter`; defaults to `bebas-neue`
 - `--quality`: JPEG quality from 1 through 100; defaults to 90 and has no effect for PNG
 
 `render` is the sole subcommand in version 1. The first release does not expose layout, color, stroke, shadow, or overlay controls.

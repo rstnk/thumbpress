@@ -31,7 +31,7 @@ The title is placed in the top-left. The optional subtitle is placed in the bott
 | `--output PATH` | No | `<input-base>_YYYYMMDDHHMMSS.jpg` | Output path ending in `.jpg`, `.jpeg`, or `.png`. When omitted, writes a JPEG beside the input using a local timestamp. |
 | `--title TEXT` | Yes | None | Title text placed in the top-left, automatically wrapped and sized to fit three lines. |
 | `--subtitle TEXT` | No | Omitted | Adds a bottom-right subtitle, automatically wrapped and sized to fit two lines. |
-| `--font NAME` | No | `anton` | Title font: `anton`, `archivo-black`, `bebas-neue`, or `inter`. |
+| `--font NAME` | No | `bebas-neue` | Title font: `anton`, `archivo-black`, `bebas-neue`, or `inter`. |
 | `--quality NUMBER` | No | `90` | JPEG quality from 1 through 100. PNG output ignores this flag. |
 
 Titles automatically wrap and shrink to fit three lines. Subtitles automatically wrap and shrink to fit two lines. `thumbpress` returns a clear error when text still cannot fit. The subtitle uses embedded Inter for readability.
