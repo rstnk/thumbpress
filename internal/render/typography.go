@@ -16,8 +16,8 @@ import (
 const (
 	titleMaxSize    = 116
 	titleMinSize    = 40
-	subtitleMaxSize = 48
-	subtitleMinSize = 24
+	subtitleMaxSize = 60
+	subtitleMinSize = 30
 
 	titleLineHeightMultiplier    = 0.75
 	subtitleLineHeightMultiplier = 1.08
