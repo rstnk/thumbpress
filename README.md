@@ -67,7 +67,7 @@ input,output,title,subtitle,font,quality
 backgrounds/episode-1.jpg,thumbnails/episode-1.jpg,Build better thumbnails,A Go CLI walkthrough,anton,90
 ```
 
-Every job requires `input`, `output`, and `title`. `subtitle` is optional. Omitted `font` and `quality` values use `bebas-neue` and `90`. Relative image paths resolve from the manifest's directory, and output directories must already exist. `thumbpress` validates every job before it renders any image. It continues after image-specific failures, reports each failure, and exits unsuccessfully when any job fails.
+Every job requires `input`, `output`, and `title`. `subtitle` is optional. Omitted `font` and `quality` values use `bebas-neue` and `90`. Relative image paths resolve from the manifest's directory, and output directories must already exist. `thumbpress` validates every job's configuration before it renders any image. It continues after image-specific failures, reports each failure, and exits unsuccessfully when any job fails.
 
 ## Options
 

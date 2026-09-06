@@ -46,7 +46,7 @@ thumbpress batch --manifest thumbnails.json
 - `font`: optional title font, defaulting to `bebas-neue`
 - `quality`: optional JPEG quality, defaulting to `90`
 
-Relative input and output paths resolve relative to the manifest. Batch validation checks every job, including duplicate output paths, before any render begins. Each render then follows the single-image rendering behavior. A failed job does not prevent remaining valid jobs from running; the command reports every failed job and exits unsuccessfully when one or more jobs fail.
+Relative input and output paths resolve relative to the manifest. Batch validation checks every job's configuration, including duplicate output paths, before any render begins. Each render then follows the single-image rendering behavior. A failed job does not prevent remaining valid jobs from running; the command reports every failed job and exits unsuccessfully when one or more jobs fail.
 
 ## Rendering behavior
 

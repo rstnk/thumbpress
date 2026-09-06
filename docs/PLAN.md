@@ -165,7 +165,7 @@ Acceptance criteria:
 
 - [x] JSON and CSV manifests accept `input`, `output`, `title`, `subtitle`, `font`, and `quality` fields.
 - [x] Relative paths resolve from the manifest directory, and duplicate output paths are rejected before rendering.
-- [x] All jobs validate before the first output is written; later render failures are reported without skipping remaining jobs.
+- [x] All job configuration validates before the first output is written; later render failures are reported without skipping remaining jobs.
 - [x] Documentation defines the manifest schema and batch failure behavior.
 
 Verification:
