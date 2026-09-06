@@ -27,8 +27,7 @@ bin/thumbpress render \
   --input background.jpg \
   --output thumbnail.jpg \
   --title "Build better thumbnails" \
-  --subtitle "A Go CLI walkthrough" \
-  --font anton
+  --subtitle "A Go CLI walkthrough"
 ```
 
 The command accepts JPEG, PNG, and WebP background images up to 50 megapixels. Output uses the extension you choose: `.jpg`, `.jpeg`, or `.png`.
@@ -52,9 +51,7 @@ JSON manifests contain a `jobs` array:
       "input": "backgrounds/episode-1.jpg",
       "output": "thumbnails/episode-1.jpg",
       "title": "Build better thumbnails",
-      "subtitle": "A Go CLI walkthrough",
-      "font": "anton",
-      "quality": 90
+      "subtitle": "A Go CLI walkthrough"
     }
   ]
 }
@@ -63,8 +60,8 @@ JSON manifests contain a `jobs` array:
 CSV manifests use this header:
 
 ```text
-input,output,title,subtitle,font,quality
-backgrounds/episode-1.jpg,thumbnails/episode-1.jpg,Build better thumbnails,A Go CLI walkthrough,anton,90
+input,output,title,subtitle
+backgrounds/episode-1.jpg,thumbnails/episode-1.jpg,Build better thumbnails,A Go CLI walkthrough
 ```
 
 Every job requires `input`, `output`, and `title`. `subtitle` is optional. Omitted `font` and `quality` values use `bebas-neue` and `90`. Relative image paths resolve from the manifest's directory, and output directories must already exist. `thumbpress` validates every job's configuration before it renders any image. It continues after image-specific failures, reports each failure, and exits unsuccessfully when any job fails.
