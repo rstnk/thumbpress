@@ -2,6 +2,11 @@ package cli
 
 import (
 	"bytes"
+	"image"
+	"image/color"
+	"image/jpeg"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -54,5 +59,67 @@ func TestRunRenderHelp(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "--input") {
 		t.Errorf("help output = %q, want input flag", stdout.String())
+	}
+}
+
+func TestRunRenderWritesThumbnail(t *testing.T) {
+	directory := t.TempDir()
+	input := filepath.Join(directory, "background.jpg")
+	output := filepath.Join(directory, "thumbnail.jpg")
+	writeJPEGFixture(t, input)
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	exitCode := Run([]string{
+		"render",
+		"--input", input,
+		"--output", output,
+		"--title", "A title",
+		"--subtitle", "A subtitle",
+	}, stdout, stderr)
+	if exitCode != 0 {
+		t.Fatalf("Run() exit code = %d, stderr = %s", exitCode, stderr.String())
+	}
+
+	file, err := os.Open(output)
+	if err != nil {
+		t.Fatalf("opening output: %v", err)
+	}
+	defer file.Close()
+	decoded, _, err := image.Decode(file)
+	if err != nil {
+		t.Fatalf("decoding output: %v", err)
+	}
+	if got, want := decoded.Bounds().Dx(), 1280; got != want {
+		t.Errorf("output width = %d, want %d", got, want)
+	}
+	if got, want := decoded.Bounds().Dy(), 720; got != want {
+		t.Errorf("output height = %d, want %d", got, want)
+	}
+}
+
+func TestValidateDistinctPaths(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "background.jpg")
+	if err := validateDistinctPaths(path, path); err == nil {
+		t.Error("validateDistinctPaths() error = nil, want same-path error")
+	}
+}
+
+func writeJPEGFixture(t *testing.T, path string) {
+	t.Helper()
+	file, err := os.Create(path)
+	if err != nil {
+		t.Fatalf("creating fixture: %v", err)
+	}
+	defer file.Close()
+
+	fixture := image.NewRGBA(image.Rect(0, 0, 1920, 1080))
+	for y := 0; y < 1080; y++ {
+		for x := 0; x < 1920; x++ {
+			fixture.SetRGBA(x, y, color.RGBA{R: 90, G: 140, B: 180, A: 255})
+		}
+	}
+	if err := jpeg.Encode(file, fixture, nil); err != nil {
+		t.Fatalf("encoding fixture: %v", err)
 	}
 }

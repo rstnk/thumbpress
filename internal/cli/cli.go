@@ -6,9 +6,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/rstnk/thumbpress/internal/fonts"
+	"github.com/rstnk/thumbpress/internal/imageio"
+	"github.com/rstnk/thumbpress/internal/render"
 )
 
 const usage = `Usage:
@@ -54,9 +58,44 @@ func runRender(args []string, stdout, stderr io.Writer) int {
 		return 2
 	}
 
-	_ = options
-	fmt.Fprintln(stderr, "render: thumbnail rendering is not available yet")
-	return 1
+	if err := validateDistinctPaths(options.Input, options.Output); err != nil {
+		fmt.Fprintf(stderr, "render: %v\n", err)
+		return 2
+	}
+
+	background, err := imageio.DecodeFile(options.Input)
+	if err != nil {
+		fmt.Fprintf(stderr, "render: %v\n", err)
+		return 1
+	}
+	titleFont, err := fonts.Open(options.Font)
+	if err != nil {
+		fmt.Fprintf(stderr, "render: %v\n", err)
+		return 1
+	}
+
+	config := render.TextConfig{Title: options.Title, TitleFont: titleFont}
+	if strings.TrimSpace(options.Subtitle) != "" {
+		subtitleFont, err := fonts.Open(fonts.Inter)
+		if err != nil {
+			fmt.Fprintf(stderr, "render: %v\n", err)
+			return 1
+		}
+		config.Subtitle = options.Subtitle
+		config.SubtitleFont = subtitleFont
+	}
+
+	thumbnail, err := render.RenderThumbnail(background, config)
+	if err != nil {
+		fmt.Fprintf(stderr, "render: %v\n", err)
+		return 1
+	}
+	if err := imageio.EncodeFile(options.Output, thumbnail, options.Quality); err != nil {
+		fmt.Fprintf(stderr, "render: %v\n", err)
+		return 1
+	}
+
+	return 0
 }
 
 // ParseRenderOptions parses and validates render command flags.
@@ -95,6 +134,9 @@ Flags:
 	if strings.TrimSpace(options.Title) == "" {
 		return RenderOptions{}, errors.New("--title is required")
 	}
+	if options.Quality < 1 || options.Quality > 100 {
+		return RenderOptions{}, errors.New("--quality must be between 1 and 100")
+	}
 
 	font, err := fonts.Parse(*fontName)
 	if err != nil {
@@ -107,4 +149,29 @@ Flags:
 
 func isHelp(arg string) bool {
 	return arg == "-h" || arg == "--help" || arg == "help"
+}
+
+func validateDistinctPaths(input, output string) error {
+	inputPath, err := filepath.Abs(input)
+	if err != nil {
+		return fmt.Errorf("resolving input path %q: %w", input, err)
+	}
+	outputPath, err := filepath.Abs(output)
+	if err != nil {
+		return fmt.Errorf("resolving output path %q: %w", output, err)
+	}
+	if inputPath == outputPath {
+		return errors.New("--output must differ from --input")
+	}
+
+	inputInfo, err := os.Stat(inputPath)
+	if err != nil {
+		return nil
+	}
+	outputInfo, err := os.Stat(outputPath)
+	if err == nil && os.SameFile(inputInfo, outputInfo) {
+		return errors.New("--output must differ from --input")
+	}
+
+	return nil
 }
