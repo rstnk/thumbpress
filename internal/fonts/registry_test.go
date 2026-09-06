@@ -42,3 +42,17 @@ func TestFile(t *testing.T) {
 		})
 	}
 }
+
+func TestOpen(t *testing.T) {
+	for _, name := range Names() {
+		t.Run(string(name), func(t *testing.T) {
+			parsed, err := Open(name)
+			if err != nil {
+				t.Fatalf("Open(%q) error = %v", name, err)
+			}
+			if parsed == nil {
+				t.Errorf("Open(%q) returned nil", name)
+			}
+		})
+	}
+}

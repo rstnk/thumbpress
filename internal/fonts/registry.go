@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	assets "github.com/rstnk/thumbpress/assets/fonts"
+	"golang.org/x/image/font/opentype"
 )
 
 // Name identifies a bundled display font.
@@ -49,6 +50,21 @@ func File(name Name) ([]byte, error) {
 	}
 
 	return data, nil
+}
+
+// Open parses an embedded font for use by the renderer.
+func Open(name Name) (*opentype.Font, error) {
+	data, err := File(name)
+	if err != nil {
+		return nil, err
+	}
+
+	parsed, err := opentype.Parse(data)
+	if err != nil {
+		return nil, fmt.Errorf("parsing embedded font %q: %w", name, err)
+	}
+
+	return parsed, nil
 }
 
 // Names returns the supported font names in command-line order.
